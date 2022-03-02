@@ -1,29 +1,44 @@
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
-import org.apache.commons.io.FileUtils;
-import com.intuit.karate.junit5.Karate;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-//@RunWith(Karate.class)
+@RunWith(Cucumber.class)
+@CucumberOptions(
+    plugin = {
+        "pretty",
+        "html:target/cucumber-report.html",
+        "html:target/cucumber-reports/report.html",
+        "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
+        },
+    features = {"src/test/java/feature/features/feature1.feature"},
+    publish = true
+)
 public class KarateRunner {
    @Test
-   public void testKarateTest(){
+   public void testKarateTest() throws Exception{
       //test 1
       //Results r = Runner.path("classpath:feature/features").outputCucumberJson(true).parallel(1);
       Results r  = Runner.path("C:/Users/SOL INVICTUS/IdeaProjects/KarateReporting/src/test/java/feature/features")
-              .outputCucumberJson(true).parallel(1);
+              .hook(new ExtentReportHook())
+              .outputCucumberJson(true)
+              .outputHtmlReport(true)
+              .parallel(2);
       generateReport(r.getReportDir());
 
    }
 
-   public static void generateReport(String karateOutputPath) {
+   public static void generateReport(String karateOutputPath) throws Exception{
       Collection<File> jsonFiles = FileUtils.listFiles(new File(karateOutputPath), new String[] {"json"}, false);
       final List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
       jsonFiles.forEach(file -> jsonPaths.add(file.getAbsolutePath()));

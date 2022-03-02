@@ -10,7 +10,7 @@ Scenario: testing the get call for User Details
     Then print response
 
     # Declaring and assigning a string value:
-    Given def varName = '****************value'
+    Given def varName = '-------------------------------value'
 
     # using a variable
     Then print varName
